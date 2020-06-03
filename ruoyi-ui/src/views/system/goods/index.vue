@@ -1,5 +1,6 @@
 <template>
-  <div class="app-container">
+  <div>
+  <div class="app-container" v-if="!open">
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
       <el-form-item label="商品标题" prop="name">
         <el-input
@@ -10,23 +11,20 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <!-- <el-form-item label="简述" prop="sketch">
+      <el-form-item label="描述" prop="sketch">
         <el-input
           v-model="queryParams.sketch"
-          placeholder="请输入简述"
+          placeholder="请输入商品描述"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item> -->
-      <el-form-item label="关键字" prop="keywords">
-        <el-input
-          v-model="queryParams.keywords"
-          placeholder="请输入商品关键字"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+      </el-form-item>
+      <el-form-item label="分类">
+         <el-select v-model="queryParams.keywords" placeholder="请选择分类" clearable size="small">
+            <el-option label="乘务就业" value="乘务就业" />
+            <el-option label="艺考" value="艺考" />
+          </el-select>
       </el-form-item>
       <!-- <el-form-item label="商品排序" prop="seq">
         <el-input
@@ -249,8 +247,8 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="id" align="center" prop="id" />
       <el-table-column label="商品标题" align="center" prop="name" />
-      <el-table-column label="简述" align="center" prop="sketch" />
-      <el-table-column label="商品关键字" align="center" prop="keywords" />
+      <el-table-column label="描述" align="center" prop="sketch" />
+      <el-table-column label="分类" align="center" prop="keywords" />
       <el-table-column label="商品排序" align="center" prop="seq" />
       <el-table-column label="商品图片地址" align="center" prop="picture" >
       <template slot-scope="scope">
@@ -308,18 +306,23 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改商品对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+  </div>
+   <div v-if="open" class="app-container" >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+         <el-form-item label="详情展示" prop="param1">
+          <quill-editor ref="myTextEditor"  v-model="form.param1" :options="editorOption" style="height:600px;" @change="onEditorChange($event)"></quill-editor>
+        </el-form-item>
         <el-form-item label="商品标题" prop="name">
           <el-input v-model="form.name" placeholder="请输入商品标题" />
         </el-form-item>
         <el-form-item label="简述" prop="sketch">
           <el-input v-model="form.sketch" placeholder="请输入简述" />
         </el-form-item>
-        <el-form-item label="商品关键字" prop="keywords">
-          <el-input v-model="form.keywords" placeholder="请输入商品关键字" />
+        <el-form-item label="分类">
+           <el-select v-model="queryParams.keywords" placeholder="请选择分类" clearable size="small">
+            <el-option label="乘务就业" value="乘务就业" />
+            <el-option label="艺考" value="艺考" />
+          </el-select>
         </el-form-item>
         <el-form-item label="商品排序" prop="seq">
           <el-input v-model="form.seq" placeholder="请输入商品排序" />
@@ -399,6 +402,8 @@
         <el-form-item label="佣金金额" prop="invitemoney">
           <el-input v-model="form.invitemoney" placeholder="请输入佣金金额" />
         </el-form-item>
+
+       
        <!--  <el-form-item label="预留字段1" prop="param1">
           <el-input v-model="form.param1" placeholder="请输入预留字段1" />
         </el-form-item>
@@ -410,18 +415,27 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
-  </div>
+    </div>
+   </div>
 </template>
 
 <script>
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
+
+import { quillEditor } from 'vue-quill-editor'
 import { listGoods, getGoods, delGoods, addGoods, updateGoods, exportGoods } from "@/api/system/goods";
+import { Base64 } from 'js-base64';
 
 export default {
   name: "Goods",
   props: ['image', 'clearList'],
   data() {
     return {
+      editorOption: {
+         placeholder: '编辑商品内容'
+       },
       // 遮罩层
       loading: true,
       // 选中数组
@@ -488,6 +502,9 @@ export default {
     getList() {
       this.loading = true;
       listGoods(this.queryParams).then(response => {
+         response.rows.forEach((v, i) => {
+                v.param1 =Base64.decode(v.param1); 
+            })
         this.goodsList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -556,6 +573,7 @@ export default {
       this.reset();
       const id = row.id || this.ids
       getGoods(id).then(response => {
+        response.data.param1 =Base64.decode(response.data.param1 );
         this.form = response.data;
         this.open = true;
         this.title = "修改商品";
@@ -563,6 +581,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function() {
+      this.form.param1  =Base64.encode(this.form.param1 );
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != undefined) {
