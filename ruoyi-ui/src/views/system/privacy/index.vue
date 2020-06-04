@@ -1,116 +1,119 @@
 <template>
-  <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
-      <el-form-item label="隐私政策名称" prop="privacyName">
-        <el-input
-          v-model="queryParams.privacyName"
-          placeholder="请输入隐私政策名称"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="隐私政策标题" prop="title">
-        <el-input
-          v-model="queryParams.title"
-          placeholder="请输入隐私政策标题"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="隐私政策内容" prop="body">
-        <el-input
-          v-model="queryParams.body"
-          placeholder="请输入隐私政策内容"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-      </el-form-item>
-    </el-form>
+  <div>
+    <div class="app-container" v-if="!open">
+      <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
+        <el-form-item label="隐私政策名称" prop="privacyName">
+          <el-input
+            v-model="queryParams.privacyName"
+            placeholder="请输入隐私政策名称"
+            clearable
+            size="small"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item label="隐私政策标题" prop="title">
+          <el-input
+            v-model="queryParams.title"
+            placeholder="请输入隐私政策标题"
+            clearable
+            size="small"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item label="隐私政策内容" prop="body">
+          <el-input
+            v-model="queryParams.body"
+            placeholder="请输入隐私政策内容"
+            clearable
+            size="small"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
+          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:privacy:add']"
-        >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:privacy:edit']"
-        >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:privacy:remove']"
-        >删除</el-button>
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="warning"
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          v-hasPermi="['system:privacy:export']"
-        >导出</el-button>
-      </el-col>
-    </el-row>
-
-    <el-table v-loading="loading" :data="privacyList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="隐私政策名称" align="center" prop="privacyName" />
-      <el-table-column label="隐私政策标题" align="center" prop="title" />
-      <el-table-column label="隐私政策内容" align="center" prop="body" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
-        <template slot-scope="scope">
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
           <el-button
+            type="primary"
+            icon="el-icon-plus"
             size="mini"
-            type="text"
+            @click="handleAdd"
+            v-hasPermi="['system:privacy:add']"
+          >新增</el-button>
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="success"
             icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
+            size="mini"
+            :disabled="single"
+            @click="handleUpdate"
             v-hasPermi="['system:privacy:edit']"
           >修改</el-button>
+        </el-col>
+        <el-col :span="1.5">
           <el-button
-            size="mini"
-            type="text"
+            type="danger"
             icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
+            size="mini"
+            :disabled="multiple"
+            @click="handleDelete"
             v-hasPermi="['system:privacy:remove']"
           >删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    
-    <pagination
-      v-show="total>0"
-      :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
-      @pagination="getList"
-    />
+        </el-col>
+        <el-col :span="1.5">
+          <el-button
+            type="warning"
+            icon="el-icon-download"
+            size="mini"
+            @click="handleExport"
+            v-hasPermi="['system:privacy:export']"
+          >导出</el-button>
+        </el-col>
+      </el-row>
+
+      <el-table v-loading="loading" :data="privacyList" @selection-change="handleSelectionChange">
+        <el-table-column type="selection" width="55" align="center" />
+        <el-table-column label="id" align="center" prop="id" />
+        <el-table-column label="隐私政策名称" align="center" prop="privacyName" />
+        <el-table-column label="隐私政策标题" align="center" prop="title" />
+        <el-table-column label="隐私政策内容" align="center" prop="body" />
+        <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:privacy:edit']"
+            >修改</el-button>
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:privacy:remove']"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      
+      <pagination
+        v-show="total>0"
+        :total="total"
+        :page.sync="queryParams.pageNum"
+        :limit.sync="queryParams.pageSize"
+        @pagination="getList"
+      />
+    </div>
 
     <!-- 添加或修改隐私政策对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <div v-if="open" class="app-container" >
+   <!--  <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body> -->
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="隐私政策名称" prop="privacyName">
           <el-input v-model="form.privacyName" placeholder="请输入隐私政策名称" />
@@ -126,7 +129,8 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+    <!-- </el-dialog> -->
+   </div>
   </div>
 </template>
 
