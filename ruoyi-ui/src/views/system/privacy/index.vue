@@ -2,7 +2,7 @@
   <div>
     <div class="app-container" v-if="!open">
       <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
-        <el-form-item label="隐私政策名称" prop="privacyName">
+        <!-- <el-form-item label="隐私政策名称" prop="privacyName">
           <el-input
             v-model="queryParams.privacyName"
             placeholder="请输入隐私政策名称"
@@ -28,11 +28,11 @@
             size="small"
             @keyup.enter.native="handleQuery"
           />
-        </el-form-item>
-        <el-form-item>
+        </el-form-item> -->
+      <!--   <el-form-item>
           <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
           <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
 
       <el-row :gutter="10" class="mb8">
@@ -81,7 +81,7 @@
         <el-table-column label="id" align="center" prop="id" />
         <el-table-column label="隐私政策名称" align="center" prop="privacyName" />
         <el-table-column label="隐私政策标题" align="center" prop="title" />
-        <el-table-column label="隐私政策内容" align="center" prop="body" />
+        <!-- <el-table-column label="隐私政策内容" align="center" prop="body" /> -->
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template slot-scope="scope">
             <el-button
@@ -122,7 +122,8 @@
           <el-input v-model="form.title" placeholder="请输入隐私政策标题" />
         </el-form-item>
         <el-form-item label="隐私政策内容" prop="body">
-          <el-input v-model="form.body" placeholder="请输入隐私政策内容" />
+          <!-- <el-input v-model="form.body" placeholder="请输入隐私政策内容" /> -->
+          <quill-editor ref="myTextEditor"  v-model="form.body" :options="editorOption" style="height:600px;" @change="onEditorChange($event)"></quill-editor>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -135,12 +136,20 @@
 </template>
 
 <script>
-import { listPrivacy, getPrivacy, delPrivacy, addPrivacy, updatePrivacy, exportPrivacy } from "@/api/system/privacy";
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
+import { quillEditor } from 'vue-quill-editor'
+import { listPrivacy, getPrivacy, delPrivacy, addPrivacy, updatePrivacy, exportPrivacy } from "@/api/system/privacy";
+import { Base64 } from 'js-base64';
 export default {
   name: "Privacy",
   data() {
     return {
+       editorOption: {
+         placeholder: '编辑隐私政策'
+       },
       // 遮罩层
       loading: true,
       // 选中数组
@@ -176,10 +185,18 @@ export default {
     this.getList();
   },
   methods: {
+
+    /** 查询新闻列表 */
+    onEditorChange({ editor, html, text }) {
+            this.form.body = html;
+    },
     /** 查询隐私政策列表 */
     getList() {
       this.loading = true;
       listPrivacy(this.queryParams).then(response => {
+         response.rows.forEach((v, i) => {
+                v.body =Base64.decode(v.body ); 
+            })
         this.privacyList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -227,6 +244,7 @@ export default {
       this.reset();
       const id = row.id || this.ids
       getPrivacy(id).then(response => {
+        response.data.body =Base64.decode(response.data.body );
         this.form = response.data;
         this.open = true;
         this.title = "修改隐私政策";
@@ -234,6 +252,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function() {
+      this.form.body  =Base64.encode(this.form.body);
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != undefined) {
