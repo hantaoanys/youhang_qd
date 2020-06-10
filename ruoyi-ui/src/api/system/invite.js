@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询用户邀请商列表
+// 查询用户邀请列表
 export function listInvite(query) {
   return request({
     url: '/system/invite/list',
@@ -9,7 +9,7 @@ export function listInvite(query) {
   })
 }
 
-// 查询用户邀请商详细
+// 查询用户邀请详细
 export function getInvite(userId) {
   return request({
     url: '/system/invite/' + userId,
@@ -17,7 +17,7 @@ export function getInvite(userId) {
   })
 }
 
-// 新增用户邀请商
+// 新增用户邀请
 export function addInvite(data) {
   return request({
     url: '/system/invite',
@@ -26,7 +26,7 @@ export function addInvite(data) {
   })
 }
 
-// 修改用户邀请商
+// 修改用户邀请
 export function updateInvite(data) {
   return request({
     url: '/system/invite',
@@ -35,7 +35,7 @@ export function updateInvite(data) {
   })
 }
 
-// 删除用户邀请商
+// 删除用户邀请
 export function delInvite(userId) {
   return request({
     url: '/system/invite/' + userId,
@@ -43,7 +43,7 @@ export function delInvite(userId) {
   })
 }
 
-// 导出用户邀请商
+// 导出用户邀请
 export function exportInvite(query) {
   return request({
     url: '/system/invite/export',

@@ -10,68 +10,19 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="我的邀请码" prop="inviteCode">
+      <el-form-item label="提现金额" prop="money">
         <el-input
-          v-model="queryParams.inviteCode"
-          placeholder="请输入我的邀请码"
+          v-model="queryParams.money"
+          placeholder="请输入提现金额"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="总邀请人数" prop="inviteNumberTotal">
-        <el-input
-          v-model="queryParams.inviteNumberTotal"
-          placeholder="请输入总邀请人数"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="总金额" prop="inviteMoneyTotal">
-        <el-input
-          v-model="queryParams.inviteMoneyTotal"
-          placeholder="请输入总金额"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="未提现金额" prop="inviteMoneyNot">
-        <el-input
-          v-model="queryParams.inviteMoneyNot"
-          placeholder="请输入未提现金额"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="已提现金额" prop="inviteMoneyAlready">
-        <el-input
-          v-model="queryParams.inviteMoneyAlready"
-          placeholder="请输入已提现金额"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="支付宝账户姓名" prop="zfbName">
-        <el-input
-          v-model="queryParams.zfbName"
-          placeholder="请输入支付宝账户姓名"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="支付宝账户" prop="zfbAccount">
-        <el-input
-          v-model="queryParams.zfbAccount"
-          placeholder="请输入支付宝账户"
-          clearable
-          size="small"
-          @keyup.enter.native="handleQuery"
-        />
+      <el-form-item label="审核状态 4.提现成功 3.审核失败 2:审核通过 1:提交申请" prop="status">
+        <el-select v-model="queryParams.status" placeholder="请选择审核状态 4.提现成功 3.审核失败 2:审核通过 1:提交申请" clearable size="small">
+          <el-option label="请选择字典生成" value="" />
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -86,7 +37,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:invite:add']"
+          v-hasPermi="['system:history:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -96,7 +47,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:invite:edit']"
+          v-hasPermi="['system:history:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -106,7 +57,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:invite:remove']"
+          v-hasPermi="['system:history:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -115,22 +66,17 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:invite:export']"
+          v-hasPermi="['system:history:export']"
         >导出</el-button>
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="inviteList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="historyList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="用户ID" align="center" prop="userId" />
       <el-table-column label="用户手机号" align="center" prop="phone" />
-      <el-table-column label="我的邀请码" align="center" prop="inviteCode" />
-      <el-table-column label="总邀请人数" align="center" prop="inviteNumberTotal" />
-      <el-table-column label="总金额" align="center" prop="inviteMoneyTotal" />
-      <el-table-column label="未提现金额" align="center" prop="inviteMoneyNot" />
-      <el-table-column label="已提现金额" align="center" prop="inviteMoneyAlready" />
-      <el-table-column label="支付宝账户姓名" align="center" prop="zfbName" />
-      <el-table-column label="支付宝账户" align="center" prop="zfbAccount" />
+      <el-table-column label="提现金额" align="center" prop="money" />
+      <el-table-column label="审核状态 4.提现成功 3.审核失败 2:审核通过 1:提交申请" align="center" prop="status" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -139,14 +85,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:invite:edit']"
+            v-hasPermi="['system:history:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:invite:remove']"
+            v-hasPermi="['system:history:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -160,32 +106,19 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改用户邀请对话框 -->
+    <!-- 添加或修改提现流水对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="用户手机号" prop="phone">
           <el-input v-model="form.phone" placeholder="请输入用户手机号" />
         </el-form-item>
-        <el-form-item label="我的邀请码" prop="inviteCode">
-          <el-input v-model="form.inviteCode" placeholder="请输入我的邀请码" />
+        <el-form-item label="提现金额" prop="money">
+          <el-input v-model="form.money" placeholder="请输入提现金额" />
         </el-form-item>
-        <el-form-item label="总邀请人数" prop="inviteNumberTotal">
-          <el-input v-model="form.inviteNumberTotal" placeholder="请输入总邀请人数" />
-        </el-form-item>
-        <el-form-item label="总金额" prop="inviteMoneyTotal">
-          <el-input v-model="form.inviteMoneyTotal" placeholder="请输入总金额" />
-        </el-form-item>
-        <el-form-item label="未提现金额" prop="inviteMoneyNot">
-          <el-input v-model="form.inviteMoneyNot" placeholder="请输入未提现金额" />
-        </el-form-item>
-        <el-form-item label="已提现金额" prop="inviteMoneyAlready">
-          <el-input v-model="form.inviteMoneyAlready" placeholder="请输入已提现金额" />
-        </el-form-item>
-        <el-form-item label="支付宝账户姓名" prop="zfbName">
-          <el-input v-model="form.zfbName" placeholder="请输入支付宝账户姓名" />
-        </el-form-item>
-        <el-form-item label="支付宝账户" prop="zfbAccount">
-          <el-input v-model="form.zfbAccount" placeholder="请输入支付宝账户" />
+        <el-form-item label="审核状态 4.提现成功 3.审核失败 2:审核通过 1:提交申请">
+          <el-radio-group v-model="form.status">
+            <el-radio label="1">请选择字典生成</el-radio>
+          </el-radio-group>
         </el-form-item>
         <el-form-item label="删除标志" prop="delFlag">
           <el-input v-model="form.delFlag" placeholder="请输入删除标志" />
@@ -200,10 +133,10 @@
 </template>
 
 <script>
-import { listInvite, getInvite, delInvite, addInvite, updateInvite, exportInvite } from "@/api/system/invite";
+import { listHistory, getHistory, delHistory, addHistory, updateHistory, exportHistory } from "@/api/system/history";
 
 export default {
-  name: "Invite",
+  name: "History",
   data() {
     return {
       // 遮罩层
@@ -216,8 +149,8 @@ export default {
       multiple: true,
       // 总条数
       total: 0,
-      // 用户邀请表格数据
-      inviteList: [],
+      // 提现流水表格数据
+      historyList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -227,13 +160,8 @@ export default {
         pageNum: 1,
         pageSize: 10,
         phone: undefined,
-        inviteCode: undefined,
-        inviteNumberTotal: undefined,
-        inviteMoneyTotal: undefined,
-        inviteMoneyNot: undefined,
-        inviteMoneyAlready: undefined,
-        zfbName: undefined,
-        zfbAccount: undefined,
+        money: undefined,
+        status: undefined,
       },
       // 表单参数
       form: {},
@@ -246,11 +174,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询用户邀请列表 */
+    /** 查询提现流水列表 */
     getList() {
       this.loading = true;
-      listInvite(this.queryParams).then(response => {
-        this.inviteList = response.rows;
+      listHistory(this.queryParams).then(response => {
+        this.historyList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -265,13 +193,8 @@ export default {
       this.form = {
         userId: undefined,
         phone: undefined,
-        inviteCode: undefined,
-        inviteNumberTotal: undefined,
-        inviteMoneyTotal: undefined,
-        inviteMoneyNot: undefined,
-        inviteMoneyAlready: undefined,
-        zfbName: undefined,
-        zfbAccount: undefined,
+        money: undefined,
+        status: "0",
         delFlag: undefined,
         createBy: undefined,
         createTime: undefined,
@@ -301,16 +224,16 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加用户邀请";
+      this.title = "添加提现流水";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const userId = row.userId || this.ids
-      getInvite(userId).then(response => {
+      getHistory(userId).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改用户邀请";
+        this.title = "修改提现流水";
       });
     },
     /** 提交按钮 */
@@ -318,7 +241,7 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.userId != undefined) {
-            updateInvite(this.form).then(response => {
+            updateHistory(this.form).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
                 this.open = false;
@@ -328,7 +251,7 @@ export default {
               }
             });
           } else {
-            addInvite(this.form).then(response => {
+            addHistory(this.form).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("新增成功");
                 this.open = false;
@@ -344,12 +267,12 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row.userId || this.ids;
-      this.$confirm('是否确认删除用户邀请编号为"' + userIds + '"的数据项?', "警告", {
+      this.$confirm('是否确认删除提现流水编号为"' + userIds + '"的数据项?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return delInvite(userIds);
+          return delHistory(userIds);
         }).then(() => {
           this.getList();
           this.msgSuccess("删除成功");
@@ -358,12 +281,12 @@ export default {
     /** 导出按钮操作 */
     handleExport() {
       const queryParams = this.queryParams;
-      this.$confirm('是否确认导出所有用户邀请数据项?', "警告", {
+      this.$confirm('是否确认导出所有提现流水数据项?', "警告", {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
           type: "warning"
         }).then(function() {
-          return exportInvite(queryParams);
+          return exportHistory(queryParams);
         }).then(response => {
           this.download(response.msg);
         }).catch(function() {});
