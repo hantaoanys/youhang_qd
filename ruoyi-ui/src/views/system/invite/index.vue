@@ -80,7 +80,7 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="primary"
           icon="el-icon-plus"
@@ -88,8 +88,8 @@
           @click="handleAdd"
           v-hasPermi="['system:invite:add']"
         >新增</el-button>
-      </el-col>
-      <el-col :span="1.5">
+      </el-col> -->
+      <!-- <el-col :span="1.5">
         <el-button
           type="success"
           icon="el-icon-edit"
@@ -98,8 +98,8 @@
           @click="handleUpdate"
           v-hasPermi="['system:invite:edit']"
         >修改</el-button>
-      </el-col>
-      <el-col :span="1.5">
+      </el-col> -->
+      <!-- <el-col :span="1.5">
         <el-button
           type="danger"
           icon="el-icon-delete"
@@ -108,7 +108,7 @@
           @click="handleDelete"
           v-hasPermi="['system:invite:remove']"
         >删除</el-button>
-      </el-col>
+      </el-col> -->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -132,7 +132,7 @@
       <el-table-column label="支付宝账户姓名" align="center" prop="zfbName" />
       <el-table-column label="支付宝账户" align="center" prop="zfbAccount" />
       <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <!-- <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -149,7 +149,7 @@
             v-hasPermi="['system:invite:remove']"
           >删除</el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     
     <pagination

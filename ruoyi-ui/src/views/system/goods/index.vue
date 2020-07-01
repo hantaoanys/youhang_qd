@@ -250,7 +250,7 @@
       <el-table-column label="描述" align="center" prop="sketch" />
       <el-table-column label="分类" align="center" prop="keywords" />
       <el-table-column label="商品排序" align="center" prop="seq" />
-      <el-table-column label="商品图片地址" align="center" prop="picture" >
+      <el-table-column label="商品图片" align="center" prop="picture" >
       <template slot-scope="scope">
           <el-popover placement="right" title="" trigger="hover">
             <img :src="scope.row.picture" width="150" height="100"  />
@@ -309,9 +309,7 @@
   </div>
    <div v-if="open" class="app-container" >
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-         <el-form-item label="详情展示" prop="param1">
-          <quill-editor ref="myTextEditor"  v-model="form.param1" :options="editorOption" style="height:600px;" @change="onEditorChange($event)"></quill-editor>
-        </el-form-item>
+        
         <el-form-item label="商品标题" prop="name">
           <el-input v-model="form.name" placeholder="请输入商品标题" />
         </el-form-item>
@@ -324,11 +322,14 @@
             <el-option label="艺考" value="艺考" />
           </el-select>
         </el-form-item>
-        <el-form-item label="商品排序" prop="seq">
-          <el-input v-model="form.seq" placeholder="请输入商品排序" />
+        <el-form-item label="详情展示" prop="param1">
+          <quill-editor ref="myTextEditor"  v-model="form.param1" :options="editorOption" style="height:400px;" ></quill-editor>
         </el-form-item>
+       <!--  <el-form-item label="商品排序" prop="seq">
+          <el-input v-model="form.seq" placeholder="请输入商品排序" />
+        </el-form-item> -->
 
-        <el-form-item label="图片上传">
+        <el-form-item label="图片上传" style="margin-top: 80px ">
         <el-upload id='imgId'
             class="upload-demo"
             ref="upload"
@@ -502,9 +503,6 @@ export default {
     getList() {
       this.loading = true;
       listGoods(this.queryParams).then(response => {
-         response.rows.forEach((v, i) => {
-                v.param1 =Base64.decode(v.param1); 
-            })
         this.goodsList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -581,12 +579,13 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function() {
-      this.form.param1  =Base64.encode(this.form.param1 );
+      this.form.param1  =Base64.encode(this.form.param1);
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != undefined) {
             updateGoods(this.form).then(response => {
               if (response.code === 200) {
+                this.queryParams.keywords ='';
                 this.msgSuccess("修改成功");
                 this.open = false;
                 this.getList();
@@ -749,6 +748,9 @@ export default {
     }
 </style>
 <style>
+    .ql-containe{
+      height: 90% !important
+    }
     .disabled {
         display: none;
     }

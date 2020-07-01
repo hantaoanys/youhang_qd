@@ -3,7 +3,7 @@ import request from '@/utils/request'
 // 查询提现流水列表
 export function listHistory(query) {
   return request({
-    url: '/system/history/list',
+    url: '/system/history/list/web',
     method: 'get',
     params: query
   })
@@ -29,8 +29,8 @@ export function addHistory(data) {
 // 修改提现流水
 export function updateHistory(data) {
   return request({
-    url: '/system/history',
-    method: 'put',
+    url: '/system/history/web/verify',
+    method: 'post',
     data: data
   })
 }
@@ -49,5 +49,11 @@ export function exportHistory(query) {
     url: '/system/history/export',
     method: 'get',
     params: query
+  })
+}
+export function yaolis(userId) {
+  return request({
+    url: '/system/invitegoods/list/web?userId=' + userId,
+    method: 'get',
   })
 }

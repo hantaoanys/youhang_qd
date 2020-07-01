@@ -143,8 +143,6 @@
     <!-- 添加或修改教师图片对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-
-
         <el-form-item label="图片上传">
         <el-upload id='imgId'
             class="upload-demo"

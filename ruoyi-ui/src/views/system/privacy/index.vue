@@ -123,11 +123,11 @@
         </el-form-item>
         <el-form-item label="隐私政策内容" prop="body">
           <!-- <el-input v-model="form.body" placeholder="请输入隐私政策内容" /> -->
-          <quill-editor ref="myTextEditor"  v-model="form.body" :options="editorOption" style="height:600px;" @change="onEditorChange($event)"></quill-editor>
+          <quill-editor ref="myTextEditor"  v-model="form.body" :options="editorOption" style="height:400px;" @change="onEditorChange($event)"></quill-editor>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+      <div slot="footer" class="dialog-footer" style="margin-top: 100px">
+        <el-button type="primary"  @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     <!-- </el-dialog> -->
@@ -194,9 +194,9 @@ export default {
     getList() {
       this.loading = true;
       listPrivacy(this.queryParams).then(response => {
-         response.rows.forEach((v, i) => {
+        /* response.rows.forEach((v, i) => {
                 v.body =Base64.decode(v.body ); 
-            })
+            })*/
         this.privacyList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -244,7 +244,7 @@ export default {
       this.reset();
       const id = row.id || this.ids
       getPrivacy(id).then(response => {
-        response.data.body =Base64.decode(response.data.body );
+        /*response.data.body =Base64.decode(response.data.body );*/
         this.form = response.data;
         this.open = true;
         this.title = "修改隐私政策";

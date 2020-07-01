@@ -165,8 +165,28 @@
         <el-form-item label="评论数量" prop="commentNumber">
           <el-input v-model="form.commentNumber" placeholder="请输入评论数量" />
         </el-form-item>
-        <el-form-item label="新闻图片" prop="newsPicture">
-          <el-input v-model="form.newsPicture" placeholder="请输入新闻图片" />
+        <el-form-item label="图片上传">
+        <el-upload id='imgId'
+            class="upload-demo"
+            ref="upload"
+            action="/dev-api/system/teacher/uploadTeacher"
+                        :beforeUpload="beforeAvatarUpload"
+                        :on-success = "handleSuccess"
+                        :on-error = "alertError"
+                        :auto-upload = 'false'
+                        :data="fileParam"
+                        list-type="picture"
+                        :file-list="fileList"
+                        :limit = '1'
+                        :on-remove = "handleRemove"
+                        accept=".jpg, .png">
+            <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
+            <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload()" >上传到服务器</el-button>
+            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件</div>
+        </el-upload>
+        </el-form-item>
+        <el-form-item label="图片地址" prop="newsPicture">
+          <el-input v-model="form.newsPicture"  disabled="disabled" placeholder="请输入新闻图片" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -240,13 +260,72 @@ export default {
       form: {},
       // 表单校验
       rules: {
-      }
+      },
+      fileList: [],
+      fileParam: {
+              // attachFile: '',
+              createUser: '',
+              flieName: '',
+              dependId: '',
+              type:''
+            },
     };
   },
   created() {
     this.getList();
   },
   methods: {
+      submitUpload() {
+          this.$refs.upload.submit();
+        },
+
+        handleRemove(file, fileList) {
+          this.fileList = [];
+            },
+      beforeAvatarUpload(file) {
+          this.fileParam.attachFile = file;
+          const extension = file.name.split('.')[1] === 'jpg'
+          const extension2 = file.name.split('.')[1] === 'png'
+          if (!extension && !extension2) {
+              window.app.$msgBox.showMsgBox({
+                  title: '提示',
+                  content: '只能为jpg、png格式',
+                  isShowInput: false,
+                  isShowCancelBtn: false
+            }).then(async (val) => {
+                  console.log(val);
+              }).catch(() => {
+                 // ...
+            });
+          };
+          return extension || extension2;
+        },
+
+        handleSuccess(response, file, fileList){
+          console.log(response.url)
+          var msg = '';
+          this.form.newsPicture =response.url
+          console.log(response)
+          if(response.result == 'failed'){
+            msg = '上传服务器失败';
+          }else if( response.result== 'success'){
+            msg = '上传服务器成功';
+          }
+        },
+
+        alertError(err, file, fileList){
+          console.log(2222222222222);
+          window.app.$msgBox.showMsgBox({
+                title: '提示',
+                content: '上传服务器失败',
+                isShowInput: false,
+                isShowCancelBtn: false
+          }).then(async (val) => {
+                console.log(val);
+            }).catch(() => {
+               // ...
+          });
+        },
     /** 查询新闻列表 */
     onEditorChange({ editor, html, text }) {
             this.form.newsBody = html;
@@ -254,9 +333,6 @@ export default {
     getList() {
       this.loading = true;
       listNews(this.queryParams).then(response => {
-          response.rows.forEach((v, i) => {
-                v.newsBody =Base64.decode(v.newsBody ); 
-            })
         this.newsList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -326,7 +402,6 @@ export default {
       this.reset();
       const id = row.id || this.ids
       getNews(id).then(response => {
-        response.data.newsBody =Base64.decode(response.data.newsBody ); 
         this.form = response.data;
         this.open = true;
         this.title = "修改新闻";
@@ -334,9 +409,7 @@ export default {
     },
     /** 提交按钮 */
     submitForm: function() {
-
-      this.form.newsBody  =Base64.encode(this.form.newsBody );
-      console.log(this.form.newsBody )
+      this.form.newsBody  =Base64.encode(this.form.newsBody);
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != undefined) {

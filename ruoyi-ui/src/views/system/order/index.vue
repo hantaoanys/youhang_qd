@@ -1,5 +1,6 @@
 <template>
-  <div class="app-container">
+   <div>
+  <div class="app-container" v-if="!open">
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
       <el-form-item label="用户ID" prop="userId">
         <el-input
@@ -10,7 +11,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="商品名称" prop="goodName">
+      <!-- <el-form-item label="商品名称" prop="goodName">
         <el-input
           v-model="queryParams.goodName"
           placeholder="请输入商品名称"
@@ -18,7 +19,7 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="图片地址" prop="goodPath">
         <el-input
           v-model="queryParams.goodPath"
@@ -28,7 +29,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="商品id" prop="goodId">
+      <!-- <el-form-item label="商品id" prop="goodId">
         <el-input
           v-model="queryParams.goodId"
           placeholder="请输入商品id"
@@ -36,13 +37,13 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="商品类型" prop="goodType">
+      </el-form-item> -->
+     <!--  <el-form-item label="商品类型" prop="goodType">
         <el-select v-model="queryParams.goodType" placeholder="请选择商品类型" clearable size="small">
           <el-option label="请选择字典生成" value="" />
         </el-select>
-      </el-form-item>
-      <el-form-item label="消费金额" prop="payMoney">
+      </el-form-item> -->
+      <!-- <el-form-item label="消费金额" prop="payMoney">
         <el-input
           v-model="queryParams.payMoney"
           placeholder="请输入消费金额"
@@ -50,8 +51,8 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="服务进度" prop="serviceProcess">
+      </el-form-item> -->
+      <!-- <el-form-item label="服务进度" prop="serviceProcess">
         <el-input
           v-model="queryParams.serviceProcess"
           placeholder="请输入服务进度"
@@ -59,15 +60,14 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+     <!--  <el-col :span="1.5">
         <el-button
           type="primary"
           icon="el-icon-plus"
@@ -95,7 +95,7 @@
           @click="handleDelete"
           v-hasPermi="['system:order:remove']"
         >删除</el-button>
-      </el-col>
+      </el-col> -->
       <el-col :span="1.5">
         <el-button
           type="warning"
@@ -106,17 +106,30 @@
         >导出</el-button>
       </el-col>
     </el-row>
-
     <el-table v-loading="loading" :data="orderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="id" align="center" prop="id" />
-      <el-table-column label="用户ID" align="center" prop="userId" />
+      <el-table-column label="订单编号" align="center" prop="orderId" />
+      <el-table-column label="用户名" align="center" prop="userName" />
       <el-table-column label="商品名称" align="center" prop="goodName" />
-      <el-table-column label="图片地址" align="center" prop="goodPath" />
+      <el-table-column label="商品图片" align="center" prop="goodPath">
+      <template slot-scope="scope">
+          <el-popover placement="right" title="" trigger="hover">
+            <img :src="scope.row.goodPath" width="150" height="100"  />
+            <img slot="reference" :src="scope.row.goodPath" :alt="scope.row.goodPath" style="max-height: 50px;max-width: 130px">
+          </el-popover>
+        </template>
+       </el-table-column>
+      <el-table-column label="用户手机号" align="center" prop="phone" />
       <el-table-column label="商品id" align="center" prop="goodId" />
       <el-table-column label="商品类型" align="center" prop="goodType" />
       <el-table-column label="消费金额" align="center" prop="payMoney" />
-      <el-table-column label="服务进度" align="center" prop="serviceProcess" />
+      <el-table-column label="订单进度" align="center" prop="process" >
+         <template slot-scope="scope">
+            <span :class="[{'color1':scope.row.process=='1'},{'color2':scope.row.process=='2'},{'color3':scope.row.process=='3'},{'color4':scope.row.process=='4'},]">
+             {{ fy(scope.row.process)}}
+            </span>
+          </template>
+        </el-table-column> 
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -126,7 +139,7 @@
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             v-hasPermi="['system:order:edit']"
-          >修改</el-button>
+          >订单详情</el-button>
           <el-button
             size="mini"
             type="text"
@@ -137,7 +150,6 @@
         </template>
       </el-table-column>
     </el-table>
-    
     <pagination
       v-show="total>0"
       :total="total"
@@ -145,42 +157,50 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改用户商品对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户ID" />
+  </div>
+  <div class="app-container" v-if="open" style="">
+      <el-form ref="form" :model="form" :rules="rules" label-width="280px">
+        <el-form-item label="用户账号" prop="userName">
+          <span> {{form.userName}}</span>
+        </el-form-item>
+        <el-form-item label="用户手机号" prop="phone">
+           <span> {{form.phone}}</span>
+        </el-form-item>
+        <el-form-item label="订单编号" prop="orderId">
+           <span> {{form.orderId}}</span>
         </el-form-item>
         <el-form-item label="商品名称" prop="goodName">
-          <el-input v-model="form.goodName" placeholder="请输入商品名称" />
+           <span> {{form.goodName}}</span>
         </el-form-item>
-        <el-form-item label="图片地址" prop="goodPath">
-          <el-input v-model="form.goodPath" placeholder="请输入图片地址" />
+        <el-form-item label="消费金额" prop="goodName">
+           <span> {{form.payMoney}}</span>
         </el-form-item>
-        <el-form-item label="商品id" prop="goodId">
-          <el-input v-model="form.goodId" placeholder="请输入商品id" />
+        <el-form-item label="处理进度" prop="delFlag">
+          <div class="block">
+            <el-timeline>
+              <el-timeline-item
+                v-for="(activity, index) in activities"
+                :key="index"
+                :icon="activity.icon"
+                :type="activity.type"
+                :color=" activity.value ==form.serviceProcess ?activity.color:''"
+                :size="activity.size"
+               >
+               <span   @click="cktileg(activity)">  {{activity.content}}</span>
+               
+              </el-timeline-item>
+            </el-timeline>
+          </div>
         </el-form-item>
-        <el-form-item label="商品类型">
-          <el-select v-model="form.goodType" placeholder="请选择商品类型">
-            <el-option label="请选择字典生成" value="" />
-          </el-select>
+        <el-form-item label="备注" prop="remark">
+            <el-input v-model="form.remark"  type="textarea"  placeholder="输入备注" />
         </el-form-item>
-        <el-form-item label="消费金额" prop="payMoney">
-          <el-input v-model="form.payMoney" placeholder="请输入消费金额" />
-        </el-form-item>
-        <el-form-item label="服务进度" prop="serviceProcess">
-          <el-input v-model="form.serviceProcess" placeholder="请输入服务进度" />
-        </el-form-item>
-        <el-form-item label="删除标志" prop="delFlag">
-          <el-input v-model="form.delFlag" placeholder="请输入删除标志" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
+        </el-form>
+      <div slot="footer" class="dialog-footer" style="text-align: center;">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
-    </el-dialog>
+  </div>
   </div>
 </template>
 
@@ -191,6 +211,54 @@ export default {
   name: "Order",
   data() {
     return {
+      activities: [{
+          content: '订单创建',
+          timestamp: '2018-04-12 20:46',
+          color: '#0bbd87',
+          size: 'large',
+          value: '1',
+        }, {
+          content: '信息提交',
+          timestamp: '2018-04-03 20:46',
+          color: '#0bbd87',
+          size: 'large',
+          value: '2',
+        }, {
+          content: '简历制作',
+           color: '#0bbd87',
+          size: 'large',
+          value: '3',
+        }, {
+          content: '公司选择',
+           color: '#0bbd87',
+          size: 'large',
+          value: '4',
+        }, {
+          content: '简历提交',
+           color: '#0bbd87',
+          size: 'large',
+          value: '5',
+        }, {
+          content: '获取面试通知',
+           color: '#0bbd87',
+          size: 'large',
+          value: '6',
+        }, {
+          content: '参加面试',
+           color: '#0bbd87',
+          size: 'large',
+          value: '7',
+        }, {
+          content: '参加体检',
+           color: '#0bbd87',
+          size: 'large',
+          value: '8',
+        }, {
+          content: '入职',
+           color: '#0bbd87',
+          size: 'large',
+          value: '9',
+        }],
       // 遮罩层
       loading: true,
       // 选中数组
@@ -230,6 +298,20 @@ export default {
     this.getList();
   },
   methods: {
+    cktileg(item){
+        this.form.serviceProcess =item.value;
+    },
+    fy(name){
+      var fl;
+      if(name =='1'){
+         fl ='待确认'
+      }else if(name =='2'){
+        fl ='服务中'
+      }else if(name =='3'){
+        fl ='已完成'
+      }
+      return  fl;
+    },
     /** 查询用户商品列表 */
     getList() {
       this.loading = true;
@@ -301,6 +383,12 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != undefined) {
+            if (this.form.serviceProcess != '1') {
+                this.form.process ='2'
+                if(this.form.serviceProcess == '9'){
+                    this.form.process ='3'
+                }
+            }
             updateOrder(this.form).then(response => {
               if (response.code === 200) {
                 this.msgSuccess("修改成功");
@@ -354,3 +442,17 @@ export default {
   }
 };
 </script>
+<style type="text/css" scoped>
+  .color1{
+    color: #1890ff;
+  }
+  .color2{
+    color: #4CAF50;
+  }
+  .color3{
+    color: #ff5722;
+  }
+  .color4{
+    color: #9e9e9e;
+  }
+</style>

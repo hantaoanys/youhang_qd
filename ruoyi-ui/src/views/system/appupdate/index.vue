@@ -253,7 +253,8 @@ export default {
   methods: {
     /** 查询app升级列表 */
     getList() {
-      this.loading = true;
+      /*this.loading = true;
+      alert(1)*/
       listAppupdate(this.queryParams).then(response => {
         this.appupdateList = response.rows;
         this.total = response.total;

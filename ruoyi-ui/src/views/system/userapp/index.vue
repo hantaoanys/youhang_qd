@@ -1,16 +1,16 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" :inline="true" label-width="68px">
-      <el-form-item label="用户姓名" prop="userName">
+      <el-form-item label="用户名" prop="userName">
         <el-input
           v-model="queryParams.userName"
-          placeholder="请输入用户姓名"
+          placeholder="请输入用户名"
           clearable
           size="small"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用户昵称" prop="nickName">
+      <!-- <el-form-item label="用户昵称" prop="nickName">
         <el-input
           v-model="queryParams.nickName"
           placeholder="请输入用户昵称"
@@ -18,7 +18,7 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <!-- <el-form-item label="用户类型" prop="userType">
         <el-select v-model="queryParams.userType" placeholder="请选择用户类型" clearable size="small">
           <el-option label="请选择字典生成" value="" />
@@ -42,12 +42,12 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用户性别" prop="sex">
+      <!-- <el-form-item label="用户性别" prop="sex">
         <el-select v-model="queryParams.sex" placeholder="请选择用户性别" clearable size="small">
           <el-option label="男" value="" />
            <el-option label="女" value="" />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <!-- <el-form-item label="头像地址" prop="avatar">
         <el-input
           v-model="queryParams.avatar"
@@ -71,7 +71,7 @@
           <el-option label="请选择字典生成" value="" />
         </el-select>
       </el-form-item> -->
-      <el-form-item label="邀请码" prop="myInviteCode">
+      <!-- <el-form-item label="邀请码" prop="myInviteCode">
         <el-input
           v-model="queryParams.myInviteCode"
           placeholder="邀请码"
@@ -79,7 +79,7 @@
           size="small"
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
+      </el-form-item> -->
       <!-- <el-form-item label="邀请码" prop="inviteCode">
         <el-input
           v-model="queryParams.inviteCode"
@@ -132,16 +132,16 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button
+        <!-- <el-button
           type="primary"
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
           v-hasPermi="['system:user:add']"
-        >新增</el-button>
+        >新增</el-button> -->
       </el-col>
       <el-col :span="1.5">
-        <el-button
+        <!-- <el-button
           type="success"
           icon="el-icon-edit"
           size="mini"
@@ -158,7 +158,7 @@
           :disabled="multiple"
           @click="handleDelete"
           v-hasPermi="['system:user:remove']"
-        >删除</el-button>
+        >删除</el-button> -->
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -194,7 +194,7 @@
       </el-table-column>
       <el-table-column label="登录失败计数" align="center" prop="errorNumber" /> -->
       <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <!-- <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -211,7 +211,7 @@
             v-hasPermi="['system:user:remove']"
           >删除</el-button>
         </template>
-      </el-table-column>
+      </el-table-column> -->
     </el-table>
     
     <pagination
